@@ -27,9 +27,9 @@ function atualizarLixeira(valores) {
   let encontrado = false;
   lixeiras.forEach((lixeira) => {
     if (lixeira.codigo == valores.codigo) {
-      lixeira.ocupacaoAtual = valores.ocupacaoAtual;
-      lixeira.estacao = valores.estacao;
-      encontrado = true;
+      lixeira.ocupacaoAtual = valores.ocupacaoAtual
+      lixeira.estacao = valores.estacao
+      encontrado = true
       return true;
     }
   });
@@ -46,19 +46,20 @@ function atualizarLixeira(valores) {
 
 /** Alteracao no topico ou subtopicos */
 cliente.on("message", (topico, payload) => {
-  const dados = JSON.parse(payload.toString());
-  console.log(dados);
+  console.log(payload.toString);
+  dados = JSON.parse(payload.toString());  
   atualizarLixeira(dados);
 });
 
 /**Enviar dados */
-function enviarDados(lixeira) {
-  const topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";
+function enviarDados(lixeira) {    
+  const topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";  
   console.log(topicoLixeira);
   console.log(lixeira.codigo);
+
   cliente.publish(
     topicoLixeira,
-    "codigo: " + lixeira.codigo,
+    JSON.stringify({"codigo": lixeira.codigo}),
     { qos: 0, retain: false },
     (error) => {
       if (error) {
@@ -71,21 +72,23 @@ function enviarDados(lixeira) {
 
 /** Automatização */
 setInterval(() => {
-  if (lixeiras != null) {
+  if (lixeiras.length == 0) {
+      console.log("Lixeiras vazias")
+  }
+  else{
+    console.log(JSON.stringify(lixeiras));
     lixeiras.sort(function (a, b) {
       //Ordena as lixeiras
       if (a.ocupacaoAtual > b.ocupacaoAtual) return -1;
       if (a.ocupacaoAtual < b.ocupacaoAtual) return 1;
       return 0;
-    });
-    console.log(lixeiras);
+    });    
     // console.log(
     //   "Recolhendo lixeira: " +
     //     lixeiras[0]codigo +
     //     "Da estação " +
     //     lixeiras[0].estacao
-    // );
-    console.log(typeof lixeiras[0]);
+    // );    
     enviarDados(lixeiras[0]);
   }
 }, 5000);
