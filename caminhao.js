@@ -9,6 +9,7 @@ let options = {
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,
   password: process.env.SENHA,
+  clientID: `Caminhao`,
 };
 
 /** Estacao A
@@ -17,16 +18,17 @@ const cliente = mqtt.connect(options);
 const topico = ["estacaoA/#", "estacaoB/#", "estacaoC/#"];
 cliente.on("connect", () => {
   console.log("Conectado ao Tópico EstacaoA");
-  cliente.subscribe([topico], () => {
+  cliente.subscribe(topico, () => {
     console.log(`Estacao inscrita no tópico: '${topico}'`);
   });
 });
 
 function atualizarLixeira(valores) {
-  encontrado = false;
-  lixeiras.forEach(function (lixeira, i) {
+  let encontrado = false;
+  lixeiras.forEach((lixeira) => {
     if (lixeira.codigo == valores.codigo) {
       lixeira.ocupacaoAtual = valores.ocupacaoAtual;
+      lixeira.estacao = valores.estacao;
       encontrado = true;
       return true;
     }
@@ -36,6 +38,7 @@ function atualizarLixeira(valores) {
     lixeiras.push({
       codigo: valores.codigo,
       ocupacaoAtual: valores.ocupacaoAtual,
+      estacao: valores.estacao,
     });
   }
   console.log(lixeiras);
@@ -43,13 +46,14 @@ function atualizarLixeira(valores) {
 
 /** Alteracao no topico ou subtopicos */
 cliente.on("message", (topico, payload) => {
-  dados = JSON.parse(payload.toString());
+  const dados = JSON.parse(payload.toString());
+  console.log(dados);
   atualizarLixeira(dados);
 });
 
 /**Enviar dados */
 function enviarDados(lixeira) {
-  topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";
+  const topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";
   console.log(topicoLixeira);
   console.log(lixeira.codigo);
   cliente.publish(
@@ -67,16 +71,21 @@ function enviarDados(lixeira) {
 
 /** Automatização */
 setInterval(() => {
-  lixeiras.sort(function (a, b) {
-    //Ordena as lixeiras
-    if (a.opcapacaoAtual < b.ocupacaoAtual) return -1;
-    if (a.ocupacaoAtual > b.ocupacaoAtual) return 1;
-    return 0;
-  });
-  console.log(
-    "Recolhendo lixeira: " +
-      lixeiras.find(0).codigo +
-      "Da estação " +
-      lixeiras.find(0).estacao
-  );
+  if (lixeiras != null) {
+    lixeiras.sort(function (a, b) {
+      //Ordena as lixeiras
+      if (a.ocupacaoAtual > b.ocupacaoAtual) return -1;
+      if (a.ocupacaoAtual < b.ocupacaoAtual) return 1;
+      return 0;
+    });
+    console.log(lixeiras);
+    // console.log(
+    //   "Recolhendo lixeira: " +
+    //     lixeiras[0]codigo +
+    //     "Da estação " +
+    //     lixeiras[0].estacao
+    // );
+    console.log(typeof lixeiras[0]);
+    enviarDados(lixeiras[0]);
+  }
 }, 5000);

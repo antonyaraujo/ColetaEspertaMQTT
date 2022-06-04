@@ -14,7 +14,7 @@ let options = {
 /** Estacao A
  * Se inscreve no tópico */
 const cliente = mqtt.connect(options);
-const topico = "estacaoA/#";
+const topico = "estacaoB/#";
 cliente.on("connect", () => {
   console.log("Conectado ao Tópico EstacaoA");
   cliente.subscribe([topico], () => {

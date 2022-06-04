@@ -2,7 +2,7 @@ require("dotenv").config();
 const mqtt = require("mqtt");
 
 const lixeira = {
-  codigo: 2,
+  codigo: 1,
   longitude: 0.0,
   latitude: 0.0,
   capacidadeAtual: 0.0,
@@ -17,6 +17,7 @@ let configuracaoRecebimento = {
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,
   password: process.env.SENHA,
+  clientID: `Lixeira ${lixeira.ID}`,
 };
 
 /** Se inscreve no tópico */
@@ -72,6 +73,7 @@ function adicionarLixo(quantidade) {
 }
 
 /** Automatização - a cada 5s uma quantidade de lixo é adicionada*/
+
 setInterval(() => {
   quantidade = Math.random() * 100.0;
   console.log(`Adicionando ${quantidade} m³ de lixo...`);
