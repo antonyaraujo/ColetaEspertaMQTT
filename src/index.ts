@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import LixeirasRouter from "./routers/lixeiras-router";
+import LixeirasRouter from "./routes/lixeiras-router";
 // Porta do servidor
 const PORT = process.env.PORT || 4000;
 // Host do servidor

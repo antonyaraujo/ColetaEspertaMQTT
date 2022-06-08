@@ -2,7 +2,7 @@ require("dotenv").config();
 const mqtt = require("mqtt");
 
 export interface Lixeira {
-  id: number;
+  id: string;
   longitude: number;
   latitude: number;
   capacidadeAtual: number;
@@ -14,7 +14,7 @@ export interface Lixeira {
 export interface Lixeiras extends Array<Lixeira> {}
 
 const lixeira: Lixeira = {
-  id: 1,
+  id: Date.now().toString(36), //Gera um ID único
   longitude: 0.0,
   latitude: 0.0,
   capacidadeAtual: 0.0,
@@ -51,7 +51,7 @@ function enviarDados() {
     topicoPublicar,
     lixeiraString,
     { qos: 0, retain: false },
-    (error) => {
+    (error: string) => {
       if (error) {
         console.error("Error on publish:" + error);
       }
@@ -61,7 +61,7 @@ function enviarDados() {
 }
 
 /** Recebe dados do topico inscrito*/
-cliente.on("message", (payload) => {
+cliente.on("message", (payload: { toString: () => string }) => {
   const dados: Lixeira = JSON.parse(payload.toString());
   if (dados.id === lixeira.id) {
     // A lixeira recebe a mensagem para ser esvaziada.
@@ -74,7 +74,7 @@ cliente.on("message", (payload) => {
 
 let avisarOcupacao = 0; //Caso a lixeira já esteja cheia, ele só irá enviar seus dados a cada 25 segs.
 
-function adicionarLixo(quantidade) {
+function adicionarLixo(quantidade: number) {
   const novaCapacidadeAtual = lixeira.capacidadeAtual + quantidade;
   if (novaCapacidadeAtual >= lixeira.capacidadeMaxima) {
     console.log("A quantidade ultrapassa a capacidade máxima da lixeira");

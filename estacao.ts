@@ -25,7 +25,7 @@ cliente.on("connect", () => {
   });
 });
 
-function atualizarLixeira(dadosLixeira) {
+function atualizarLixeira(dadosLixeira: Lixeira) {
   let encontrado = false;
   lixeiras.forEach(function (lixeira, i) {
     if (lixeira.id == dadosLixeira.id) {
@@ -42,7 +42,7 @@ function atualizarLixeira(dadosLixeira) {
 }
 
 /** Alteracao no topico ou subtopicos */
-cliente.on("message", (topico, payload) => {
+cliente.on("message", (payload: { toString: () => string }) => {
   const dados: Lixeira = JSON.parse(payload.toString());
   atualizarLixeira(dados);
 });

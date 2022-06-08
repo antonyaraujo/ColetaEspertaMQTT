@@ -26,7 +26,7 @@ cliente.on("connect", () => {
 });
 
 //** Recebe os dados atualizados das lixeiras*/
-function atualizarLixeira(dadosLixeiras) {
+function atualizarLixeira(dadosLixeiras: Lixeira) {
   let encontrado = false;
   lixeiras.forEach((lixeira) => {
     if (lixeira.id == dadosLixeiras.id) {
@@ -45,14 +45,14 @@ function atualizarLixeira(dadosLixeiras) {
 }
 
 /** Alteracao no topico ou subtopicos */
-cliente.on("message", (topico, payload) => {
+cliente.on("message", (payload: { toString: () => string }) => {
   console.log(payload.toString);
   const dados: Lixeira = JSON.parse(payload.toString());
   atualizarLixeira(dados);
 });
 
 /**Enviar dados */
-function coletarLixeira(lixeira) {
+function coletarLixeira(lixeira: Lixeira) {
   const topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";
   console.log(topicoLixeira);
   console.log(lixeira.id);
@@ -61,7 +61,7 @@ function coletarLixeira(lixeira) {
     topicoLixeira,
     JSON.stringify({ id: lixeira.id }),
     { qos: 0, retain: false },
-    (error) => {
+    (error: any) => {
       if (error) {
         console.error(error);
       }
