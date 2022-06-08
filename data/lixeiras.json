@@ -25,14 +25,5 @@
     "capacidadeMaxima": 100,
     "ocupacaoAtual": 0,
     "estacao": "C"
-  },
-  "4": {
-    "id": 4,
-    "longitude": 120,
-    "latitude": 40,
-    "capacidadeAtual": 50,
-    "capacidadeMaxima": 100,
-    "ocupacaoAtual": 50,
-    "estacao": "C"
   }
 }
