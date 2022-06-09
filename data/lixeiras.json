@@ -5,7 +5,7 @@
     "latitude": 0,
     "capacidadeAtual": 0,
     "capacidadeMaxima": 100,
-    "ocupacaoAtual": 0,
+    "ocupacaoAtual": 20,
     "estacao": "B"
   },
   "2": {
@@ -14,7 +14,7 @@
     "latitude": 0,
     "capacidadeAtual": 0,
     "capacidadeMaxima": 100,
-    "ocupacaoAtual": 0,
+    "ocupacaoAtual": 70,
     "estacao": "A"
   },
   "3": {
@@ -23,7 +23,16 @@
     "latitude": 20,
     "capacidadeAtual": 0,
     "capacidadeMaxima": 100,
-    "ocupacaoAtual": 0,
+    "ocupacaoAtual": 40,
+    "estacao": "C"
+  },
+  "4": {
+    "id": 4,
+    "longitude": 120,
+    "latitude": 40,
+    "capacidadeAtual": 50,
+    "capacidadeMaxima": 100,
+    "ocupacaoAtual": 50,
     "estacao": "C"
   }
 }

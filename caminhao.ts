@@ -1,9 +1,8 @@
 require("dotenv").config();
 const mqtt = require("mqtt");
 import { Lixeira } from "./lixeira";
-import { Lixeiras } from "./lixeira";
 
-const lixeiras: Lixeiras = [];
+const lixeiras: Lixeira[] = [];
 
 const options = {
   host: process.env.HOST,

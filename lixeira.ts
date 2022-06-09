@@ -11,8 +11,6 @@ export interface Lixeira {
   estacao: "A" | "B" | "c";
 }
 
-export interface Lixeiras extends Array<Lixeira> {}
-
 const lixeira: Lixeira = {
   id: Date.now().toString(36), //Gera um ID único
   longitude: 0.0,
