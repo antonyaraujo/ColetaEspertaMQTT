@@ -2,7 +2,7 @@ require("dotenv").config();
 const mqtt = require("mqtt");
 import { Lixeira } from "./lixeira";
 
-const lixeiras: Lixeira[] = [];
+let lixeiras: Lixeira[] = [];
 
 const options = {
   host: process.env.HOST,
@@ -29,8 +29,8 @@ function atualizarLixeira(dadosLixeiras: Lixeira) {
   let encontrado = false;
   lixeiras.forEach((lixeira) => {
     if (lixeira.id == dadosLixeiras.id) {
+      lixeira.quantidadeLixoAtual = dadosLixeiras.quantidadeLixoAtual;
       lixeira.ocupacaoAtual = dadosLixeiras.ocupacaoAtual;
-      lixeira.estacao = dadosLixeiras.estacao;
       encontrado = true;
       return true;
     }
@@ -40,12 +40,10 @@ function atualizarLixeira(dadosLixeiras: Lixeira) {
   if (!encontrado) {
     lixeiras.push({ ...dadosLixeiras });
   }
-  console.log(lixeiras);
 }
 
 /** Alteracao no topico ou subtopicos */
-cliente.on("message", (payload: { toString: () => string }) => {
-  console.log(payload.toString);
+cliente.on("message", (topico: any, payload: { toString: () => string }) => {
   const dados: Lixeira = JSON.parse(payload.toString());
   atualizarLixeira(dados);
 });
@@ -53,8 +51,6 @@ cliente.on("message", (payload: { toString: () => string }) => {
 /**Enviar dados */
 function coletarLixeira(lixeira: Lixeira) {
   const topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";
-  console.log(topicoLixeira);
-  console.log(lixeira.id);
 
   cliente.publish(
     topicoLixeira,
@@ -66,7 +62,8 @@ function coletarLixeira(lixeira: Lixeira) {
       }
     }
   );
-  console.log("Lixeira " + lixeira.id + "recolhida");
+  console.log("Lixeira " + lixeira.id + " recolhida");
+  console.log("Caminhão se deslocando para a próxima lixeira...");
 }
 
 /** A cada 10s o caminhão parte para coletar a próxima lixeira.*/
@@ -74,22 +71,13 @@ setInterval(() => {
   if (lixeiras.length == 0) {
     console.log("Não há lixeiras para serem coletadas no momento.");
   } else {
-    console.log(JSON.stringify(lixeiras));
     lixeiras.sort(function (a, b) {
       //Ordena as lixeiras
       if (a.ocupacaoAtual > b.ocupacaoAtual) return -1;
       if (a.ocupacaoAtual < b.ocupacaoAtual) return 1;
       return 0;
     });
-    // console.log(
-    //   "Recolhendo lixeira: " +
-    //     lixeiras[0]id +
-    //     "Da estação " +
-    //     lixeiras[0].estacao
-    // );
-    console.log(`Caminhão se encaminhando para a lixeira ${lixeiras[0].id}`);
+    console.log(`Caminhão se aproximando da lixeira ${lixeiras[0].id}`);
     coletarLixeira(lixeiras[0]);
   }
-}, 1000 * 10);
-
-export {};
+}, 1000 * 30);
