@@ -4,35 +4,33 @@ const inquirer = require("inquirer");
 import axios from "axios";
 import { Lixeira } from "lixeira";
 const promises: any[] = [];
-let lixeiras: any = [];  
+let lixeiras: any[] = [];
 
 async function visualizarLixeiras(estacao: string, quantidade: number) {
   let requisicao: string;
   let porta = 4000;
-  for(let i: number = 0; i < 1; i++){
-    if(estacao === "Todas")
-        porta  = 4000 + i;
-    else{
-      switch(estacao){
+  for (let i: number = 0; i < 1; i++) {
+    if (estacao === "Todas") porta = 4000 + i;
+    else {
+      switch (estacao) {
         case "estacaoA":
-            porta = 4000;
-            break;
+          porta = 4000;
+          break;
         case "estacaoB":
-            porta = 4001;
-            break;
-          case "estacaoC":
-            porta = 4002;
-            break;
+          porta = 4001;
+          break;
+        case "estacaoC":
+          porta = 4002;
+          break;
       }
     }
     requisicao = `http://localhost:${porta}/Lixeiras_${quantidade}`;
-    console.log(requisicao)
+    console.log(requisicao);
     /** Requisição da Estação */
-    const request = axios.get(requisicao).then(function (response) {                
-      console.log(response.data);
-      lixeiras.concat(response.data);
-      console.log(lixeiras)
-      console.log(`Exibição - ${i+1} requisição`)
+    const request = axios.get(requisicao).then(function (response) {
+      lixeiras = lixeiras.concat(response.data);
+      console.log(lixeiras);
+      console.log(`Exibição - ${i + 1} requisição`);
       lixeiras.forEach((lixeira: any) => {
         console.log(`Lixeira ${lixeira.id}`);
       });
@@ -40,21 +38,19 @@ async function visualizarLixeiras(estacao: string, quantidade: number) {
     promises.push(request);
     await Promise.all(promises);
 
-    if(estacao != "Todas")
-      break;
+    // Ordenacao das lixeiras
+    if (lixeiras.length == 0) {
+      console.log("Não há lixeiras para serem coletadas no momento.");
+    } else {
+      lixeiras.sort(function (a: any, b: any) {
+        //Ordena as lixeiras
+        if (a.ocupacaoAtual > b.ocupacaoAtual) return -1;
+        if (a.ocupacaoAtual < b.ocupacaoAtual) return 1;
+        return 0;
+      });
+    }
+    if (estacao != "Todas") break;
   }
-  
-  // Ordenacao das lixeiras
-  if (lixeiras.length == 0) {
-    console.log("Não há lixeiras para serem coletadas no momento.");
-  } else {
-    lixeiras.sort(function (a: any, b: any) {
-      //Ordena as lixeiras
-      if (a.ocupacaoAtual > b.ocupacaoAtual) return -1;
-      if (a.ocupacaoAtual < b.ocupacaoAtual) return 1;
-      return 0;
-    });
-}
 }
 
 async function visualizarLixeiraEspecifica(id: string) {
@@ -94,10 +90,10 @@ const exibirMenu = () => {
     });
 };
 
-const visualizarLixeira = (lixeiras: Lixeira[]) => {
+const visualizarLixeira = (lixeirasResponse: Lixeira[]) => {
   let aux: string[] = [];
   // console.log(lixeiras);
-  lixeiras.forEach((lixeira: Lixeira) => {
+  lixeirasResponse.forEach((lixeira: Lixeira) => {
     aux.push(lixeira.id);
   });
   inquirer
@@ -112,6 +108,7 @@ const visualizarLixeira = (lixeiras: Lixeira[]) => {
     .then((answers: any) => {
       // console.info("Answers:", answers);
       visualizarLixeiraEspecifica(answers.id).then(() => {
+        lixeiras = [];
         exibirMenu();
       });
     });

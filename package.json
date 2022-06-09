@@ -5,9 +5,12 @@
   "main": "./src/index.ts",
   "scripts": {
     "dev": "nodemon --watch \"./\" --ext \"ts,json\" --exec \"ts-node estacao.ts\"",
-    "lixeira": "nodemon --watch \"./\" --ext \"ts,json\" --exec \"ts-node lixeira.ts\"",
-    "caminhao": "nodemon --watch \"./\" --ext \"ts,json\" --exec \"ts-node caminhao.ts\"",
+    "lixeira": "ts-node lixeira.ts\"",
+    "caminhao": "ts-node caminhao.ts\"",
     "gerente": "ts-node gerente.ts\"",
+    "estacao1": "ts-node estacao.ts\"",
+    "estacao2": "ts-node estacao2.ts\"",
+    "estacao3": "ts-node estacao3.ts\"",
     "build": "tsc",
     "start": "node ./dist/index.js"
   },

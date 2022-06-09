@@ -6,7 +6,7 @@ import express from "express";
 import cors from "cors";
 
 // Porta do servidor
-const PORT = 4000;
+const PORT = 4002;
 // Host do servidor
 const HOSTNAME = process.env.HOSTNAME || "http://localhost";
 // App Express
@@ -83,7 +83,7 @@ const options = {
 /** Estacao A
  * Se inscreve no tópico */
 const cliente = mqtt.connect(options);
-const topico = "estacaoA/#";
+const topico = "estacaoC/#";
 cliente.on("connect", () => {
   console.log(`Conectado ao Tópico ${topico}`);
   cliente.subscribe([topico], () => {
