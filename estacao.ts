@@ -92,8 +92,10 @@ function atualizarLixeira(dadosLixeira: Lixeira) {
 }
 
 /** Alteracao no topico ou subtopicos */
-cliente.on("message", (payload: any) => {
+cliente.on("message", (topico, payload: any) => {
   console.log(payload);
+  console.log(payload.toString())
   const dados: Lixeira = JSON.parse(payload.toString());
+  console.log(payload.toString())
   atualizarLixeira(dados);
 });
