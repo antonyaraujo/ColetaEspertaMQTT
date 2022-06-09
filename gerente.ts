@@ -6,24 +6,41 @@ import { Lixeira } from "lixeira";
 const promises: any[] = [];
 let lixeiras: any[] = [];
 
-async function visualizarLixeiras(estacao: string, quantidade: number) {
+async function visualizarLixeirasEstacao(estacao: string, quantidade: number) {
+  let requisicao: string;
+  let porta;
+
+  switch (estacao) {
+    case "A":
+      porta = 4000;
+      break;
+    case "B":
+      porta = 4001;
+      break;
+    case "C":
+      porta = 4002;
+      break;
+  }
+
+  requisicao = `http://localhost:${porta}/Lixeiras_${quantidade}`;
+  console.log(requisicao);
+  /** Requisição da Estação */
+  const request = axios.get(requisicao).then(function (response) {
+    lixeiras = lixeiras.concat(response.data);
+    console.log(lixeiras);
+    lixeiras.forEach((lixeira: any) => {
+      console.log(`Lixeira ${lixeira.id}`);
+    });
+  });
+  promises.push(request);
+  await Promise.all(promises);
+}
+
+async function visualizarLixeiras(quantidade: number) {
   let requisicao: string;
   let porta = 4000;
   for (let i: number = 0; i < 1; i++) {
-    if (estacao === "Todas") porta = 4000 + i;
-    else {
-      switch (estacao) {
-        case "estacaoA":
-          porta = 4000;
-          break;
-        case "estacaoB":
-          porta = 4001;
-          break;
-        case "estacaoC":
-          porta = 4002;
-          break;
-      }
-    }
+    porta += i;
     requisicao = `http://localhost:${porta}/Lixeiras_${quantidade}`;
     console.log(requisicao);
     /** Requisição da Estação */
@@ -35,8 +52,6 @@ async function visualizarLixeiras(estacao: string, quantidade: number) {
         console.log(`Lixeira ${lixeira.id}`);
       });
     });
-    promises.push(request);
-    await Promise.all(promises);
 
     // Ordenacao das lixeiras
     if (lixeiras.length == 0) {
@@ -49,7 +64,8 @@ async function visualizarLixeiras(estacao: string, quantidade: number) {
         return 0;
       });
     }
-    if (estacao != "Todas") break;
+    promises.push(request);
+    await Promise.all(promises);
   }
 }
 
@@ -84,9 +100,16 @@ const exibirMenu = () => {
       const estacao = answers.estacao;
       // console.log(estacao);
       const quantidade = +answers.quantidade;
-      visualizarLixeiras(estacao, quantidade).then(() => {
-        visualizarLixeira(lixeiras);
-      });
+
+      if (estacao === "Todas") {
+        visualizarLixeiras(quantidade).then(() => {
+          visualizarLixeira(lixeiras);
+        });
+      } else {
+        visualizarLixeirasEstacao(estacao, quantidade).then(() => {
+          visualizarLixeira(lixeiras);
+        });
+      }
     });
 };
 
