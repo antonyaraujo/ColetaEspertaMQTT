@@ -27,7 +27,6 @@ let options = {
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,
   password: process.env.SENHA,
-  clientID: `Lixeira ${lixeira.id}`,
 };
 
 /** Se inscreve no tópico */
@@ -45,6 +44,7 @@ function enviarDados() {
   console.log(topicoPublicar);
   console.log(lixeira.ocupacaoAtual);
   const lixeiraString = JSON.stringify(lixeira);
+  console.log(JSON.parse(lixeiraString));
   cliente.publish(
     topicoPublicar,
     lixeiraString,
@@ -96,3 +96,8 @@ setInterval(() => {
   console.log(`Lixeira ${lixeira.id} adicionando ${quantidade} m³ de lixo...`);
   adicionarLixo(quantidade);
 }, 5000);
+
+// process.on("SIGINT", function () {
+//   console.log("Caught interrupt signal");
+//   process.exit(0);
+// });

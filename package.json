@@ -4,7 +4,9 @@
   "description": "",
   "main": "./src/index.ts",
   "scripts": {
-    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node ./src/index.ts\"",
+    "dev": "nodemon --watch \"./\" --ext \"ts,json\" --exec \"ts-node estacao.ts\"",
+    "lixeira": "nodemon --watch \"./\" --ext \"ts,json\" --exec \"ts-node lixeira.ts\"",
+    "caminhao": "nodemon --watch \"./\" --ext \"ts,json\" --exec \"ts-node caminhao.ts\"",
     "build": "tsc",
     "start": "node ./dist/index.js"
   },
