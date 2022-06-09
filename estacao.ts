@@ -33,12 +33,27 @@ const desc = (a: Lixeira, b: Lixeira) => {
 };
 
 // Rotas
-app.get("/Lixeiras/get/:N", (req, res) => {
+app.get("/Lixeiras_:N", (req, res) => {
   const numeroLixeiras: number = +req.params["N"];
   console.log(numeroLixeiras);
-  lixeiras.sort(desc);  
+  lixeiras.sort(desc);
   lixeiras = lixeiras.slice(0, numeroLixeiras);
   res.send(lixeiras);
+});
+
+app.get("/Estacao:id/Lixeiras_:N", (req, res) => {
+  const numeroLixeiras: number = +req.params["N"];
+  const estacao: string = req.params["id"];
+  let lixeirasSelecionadas: Lixeira[] = [];
+  lixeiras.forEach((lixeira) => {
+    if (lixeira.estacao === estacao) {
+      lixeirasSelecionadas.push(lixeira);
+    }
+  });
+
+  lixeirasSelecionadas.sort(desc);
+  lixeirasSelecionadas = lixeirasSelecionadas.slice(0, numeroLixeiras);
+  res.send(lixeirasSelecionadas);
 });
 
 app.get("/Lixeiras/:id", (req, res) => {

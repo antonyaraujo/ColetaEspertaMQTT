@@ -101,17 +101,17 @@ setInterval(() => {
   adicionarquantidadeLixoAtual(quantidade);
 }, 5000);
 
-process.on("SIGINT", function () {
-  console.log("Caught interrupt signal");
-  cliente.publish(
-    topicoPublicarDados,
-    { qos: 0, retain: false },
-    (error: string) => {
-      if (error) {
-        console.error("Error on publish:" + error);
-      }
-    }
-  );
+// process.on("SIGINT", function () {
+//   console.log("Caught interrupt signal");
+//   cliente.publish(
+//     topicoPublicarDados,
+//     { qos: 0, retain: false },
+//     (error: string) => {
+//       if (error) {
+//         console.error("Error on publish:" + error);
+//       }
+//     }
+//   );
 
-  process.exit(0);
-});
+//   process.exit(0);
+// });
