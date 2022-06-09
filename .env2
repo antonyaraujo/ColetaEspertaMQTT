@@ -1,0 +1,10 @@
+APP_NAME='Coleta Esperta'
+
+# Dados de Acesso
+HOST=ba0157fae8534f45b495084d8235d6e2.s1.eu.hivemq.cloud
+PORTA=8883
+PROTOCOLO=mqtts
+USUARIO=coleta-esperta
+SENHA=CoL3Tt4ixpert@
+
+PORT = 4001

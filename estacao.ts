@@ -5,8 +5,8 @@ import { Lixeira } from "./lixeira";
 import express from "express";
 import cors from "cors";
 
-// Porta do servidor
-const PORT = process.env.PORT || 4000;
+// Porta do servidor 
+const PORT = process.env.PORT;
 // Host do servidor
 const HOSTNAME = process.env.HOSTNAME || "http://localhost";
 // App Express
@@ -83,9 +83,9 @@ const options = {
 /** Estacao A
  * Se inscreve no tópico */
 const cliente = mqtt.connect(options);
-const topico = "estacaoB/#";
+const topico = "estacaoA/#";
 cliente.on("connect", () => {
-  console.log("Conectado ao Tópico EstacaoA");
+  console.log(`Conectado ao Tópico ${topico}`);
   cliente.subscribe([topico], () => {
     console.log(`Estacao inscrita no tópico: '${topico}'`);
   });

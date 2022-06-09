@@ -1,5 +1,6 @@
 require("dotenv").config();
 const mqtt = require("mqtt");
+let estacoes = ["A", "B"];
 
 export interface Lixeira {
   id: string;
@@ -8,7 +9,7 @@ export interface Lixeira {
   quantidadeLixoAtual: number;
   quantidadeLixoMaxima: number;
   ocupacaoAtual: number; // dado em porcentagem (%)
-  estacao: "A" | "B" | "c";
+  estacao: string;
 }
 
 const lixeira: Lixeira = {
@@ -18,7 +19,7 @@ const lixeira: Lixeira = {
   quantidadeLixoAtual: 0.0,
   quantidadeLixoMaxima: 100.0,
   ocupacaoAtual: 0.0,
-  estacao: "B",
+  estacao: estacoes[Math.floor(Math.random() * estacoes.length)],
 };
 
 let options = {
@@ -32,6 +33,7 @@ let options = {
 /** Se inscreve no tópico */
 const cliente = mqtt.connect(options);
 const topicoInscrito = `estacao${lixeira.estacao}/esvaziar_lixeira`;
+console.log(topicoInscrito)
 const topicoPublicarDados = `estacao${lixeira.estacao}/Lixeira` + lixeira.id;
 const topicoPublicarSaida = `estacao${lixeira.estacao}/Lixeira` + lixeira.id;
 
@@ -60,10 +62,10 @@ function enviarDados() {
 }
 
 /** Recebe dados do topico inscrito*/
-cliente.on("message", (topico: any, payload: { toString: () => string }) => {
+cliente.on("message", (topico: any, payload: { toString: () => string }) => {  
   const dados = JSON.parse(payload.toString());
   if (dados.id === lixeira.id) {
-    // A lixeira recebe a mensagem para ser esvaziada.
+    // A lixeira recebe a mensagem para ser esvaziada.    
     lixeira.quantidadeLixoAtual = 0;
     lixeira.ocupacaoAtual = 0;
     enviarDados();
