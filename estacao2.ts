@@ -73,7 +73,7 @@ app.listen(PORT, () => {
 });
 
 const options = {
-  host: process.env.HOST,
+  host: "ba0157fae8534f45b495084d8235d6e2.s1.eu.hivemq.cloud",
   port: process.env.PORTA,
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,

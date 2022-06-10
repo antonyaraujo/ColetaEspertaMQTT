@@ -41,10 +41,12 @@ async function visualizarLixeiras(quantidade: number) {
   let porta = 4000;
   for (let i: number = 0; i < 1; i++) {
     porta += i;
+    if (i === 4001) console.log("Porta correta");
     requisicao = `http://localhost:${porta}/Lixeiras_${quantidade}`;
     console.log(requisicao);
     /** Requisição da Estação */
     const request = axios.get(requisicao).then(function (response) {
+      console.log(response.data);
       lixeiras = lixeiras.concat(response.data);
       console.log(lixeiras);
       console.log(`Exibição - ${i + 1} requisição`);

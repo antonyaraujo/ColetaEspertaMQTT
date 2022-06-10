@@ -10,7 +10,6 @@
     "gerente": "ts-node gerente.ts\"",
     "estacao1": "ts-node estacao.ts\"",
     "estacao2": "ts-node estacao2.ts\"",
-    "estacao3": "ts-node estacao3.ts\"",
     "build": "tsc",
     "start": "node ./dist/index.js"
   },
