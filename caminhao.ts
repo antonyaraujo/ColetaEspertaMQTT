@@ -4,8 +4,9 @@ import { Lixeira } from "./lixeira";
 
 let lixeiras: Lixeira[] = [];
 
-const options = {
-  host: process.env.HOST,
+/** Broker A */
+const opcoesBrokerA = {
+  host: "55e424c995d945808dcb66224696fd04.s1.eu.hivemq.cloud",
   port: process.env.PORTA,
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,
@@ -15,12 +16,34 @@ const options = {
 
 /** Estacao A
  * Se inscreve no tópico */
-const cliente = mqtt.connect(options);
-const topico = ["estacaoA/#", "estacaoB/#", "estacaoC/#"];
-cliente.on("connect", () => {
-  console.log("Conectado às estações A, B e C");
-  cliente.subscribe(topico, () => {
-    console.log(`Caminhão inscrito no tópico: '${topico}'`);
+const clienteA = mqtt.connect(opcoesBrokerA);
+const topicoA = ["estacaoA/#"];
+clienteA.on("connect", () => {
+  console.log("Conectado à estação A");
+  clienteA.subscribe(topicoA, () => {
+    console.log(`Caminhão inscrito no tópico: '${topicoA}'`);
+  });
+});
+
+
+/** Broker B */
+const opcoesBrokerB = {
+  host: "ba0157fae8534f45b495084d8235d6e2.s1.eu.hivemq.cloud",
+  port: process.env.PORTA,
+  protocol: process.env.PROTOCOLO,
+  username: process.env.USUARIO,
+  password: process.env.SENHA,
+  clientID: `Caminhao`,
+};
+
+/** Estacao B
+ * Se inscreve no tópico */
+const clienteB = mqtt.connect(opcoesBrokerB);
+const topicoB = ["estacaoB/#"];
+clienteB.on("connect", () => {
+  console.log("Conectado à estação B");
+  clienteB.subscribe(topicoB, () => {
+    console.log(`Caminhão inscrito no tópico: '${topicoB}'`);
   });
 });
 
@@ -42,8 +65,14 @@ function atualizarLixeira(dadosLixeiras: Lixeira) {
   }
 }
 
-/** Alteracao no topico ou subtopicos */
-cliente.on("message", (topico: any, payload: { toString: () => string }) => {
+/** Alteracao no topico ou subtopicos - Broker A */
+clienteA.on("message", (topicoA: any, payload: { toString: () => string }) => {
+  const dados: Lixeira = JSON.parse(payload.toString());
+  atualizarLixeira(dados);
+});
+
+/** Alteracao no topico ou subtopicos - Broker B */
+clienteB.on("message", (topicoB: any, payload: { toString: () => string }) => {
   const dados: Lixeira = JSON.parse(payload.toString());
   atualizarLixeira(dados);
 });
@@ -52,7 +81,7 @@ cliente.on("message", (topico: any, payload: { toString: () => string }) => {
 function coletarLixeira(lixeira: Lixeira) {
   const topicoLixeira = "estacao" + lixeira.estacao + "/esvaziar_lixeira";
 
-  cliente.publish(
+  clienteA.publish(
     topicoLixeira,
     JSON.stringify({ id: lixeira.id }),
     { qos: 0, retain: false },
@@ -62,6 +91,18 @@ function coletarLixeira(lixeira: Lixeira) {
       }
     }
   );
+
+  clienteB.publish(
+    topicoLixeira,
+    JSON.stringify({ id: lixeira.id }),
+    { qos: 0, retain: false },
+    (error: any) => {
+      if (error) {
+        console.error(error);
+      }
+    }
+  );
+
   console.log("Lixeira " + lixeira.id + " recolhida");
   console.log("Caminhão se deslocando para a próxima lixeira...");
 }
