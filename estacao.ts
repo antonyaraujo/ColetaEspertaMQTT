@@ -58,13 +58,14 @@ app.get("/Estacao:id/Lixeiras_:N", (req, res) => {
 
 app.get("/Lixeiras/:id", (req, res) => {
   const id: string = req.params["id"];
+  console.log(id)  
   lixeiras.forEach((lixeira: Lixeira) => {
     if (lixeira.id === id) {
-      res.send(lixeira);
-    } else {
-      res.sendStatus(404);
-    }
+      res.send(lixeira);      
+      return true;
+    } 
   });
+  res.sendStatus(404);
 });
 
 // Inicia o sevidor

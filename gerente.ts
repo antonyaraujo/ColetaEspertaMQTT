@@ -5,6 +5,7 @@ import axios from "axios";
 import { Lixeira } from "lixeira";
 const promises: any[] = [];
 let lixeiras: any[] = [];
+let lixeirasRequisicao: Lixeira[] = [];
 
 async function visualizarLixeirasEstacao(estacao: string, quantidade: number) {
   let requisicao: string;
@@ -31,7 +32,8 @@ async function visualizarLixeirasEstacao(estacao: string, quantidade: number) {
     lixeiras.forEach((lixeira: any) => {
       console.log(`Lixeira ${lixeira.id}`);
     });
-  });
+  })
+  .catch(error => console.log("o erro foi: " + error.message));
   promises.push(request);
   await Promise.all(promises);
 }
@@ -39,24 +41,33 @@ async function visualizarLixeirasEstacao(estacao: string, quantidade: number) {
 async function visualizarLixeiras(quantidade: number) {
   let requisicao: string;
   let porta = 4000;
-  for (let i: number = 0; i < 1; i++) {
-    porta += i;
-    if (i === 4001) console.log("Porta correta");
-    requisicao = `http://localhost:${porta}/Lixeiras_${quantidade}`;
-    console.log(requisicao);
+  for (let i: number = 0; i <= 1; i++) {
+    porta += i;    
+    console.log("Requisitando na porta ", porta);
+    requisicao = `http://localhost:${porta}/Lixeiras_${quantidade}`;    
+    console.log("Requisição: ", requisicao);
     /** Requisição da Estação */
-    const request = axios.get(requisicao).then(function (response) {
+    const request = await axios.get(requisicao).then(function (response) {
       console.log(response.data);
-      lixeiras = lixeiras.concat(response.data);
-      console.log(lixeiras);
+      lixeirasRequisicao = lixeirasRequisicao.concat(response.data);
+      console.log(lixeirasRequisicao);
       console.log(`Exibição - ${i + 1} requisição`);
-      lixeiras.forEach((lixeira: any) => {
+      lixeirasRequisicao.forEach((lixeira: any) => {
         console.log(`Lixeira ${lixeira.id}`);
       });
+      
+      
     });
+    try{
+      promises.push(request);
+      Promise.all(promises);
+    }catch{
+      console.log("POssível erro 404");
+    }
+  }
 
     // Ordenacao das lixeiras
-    if (lixeiras.length == 0) {
+    if (lixeirasRequisicao.length == 0) {
       console.log("Não há lixeiras para serem coletadas no momento.");
     } else {
       lixeiras.sort(function (a: any, b: any) {
@@ -66,17 +77,16 @@ async function visualizarLixeiras(quantidade: number) {
         return 0;
       });
     }
-    promises.push(request);
-    await Promise.all(promises);
-  }
+
+    lixeirasRequisicao = lixeirasRequisicao.slice(0, quantidade); 
 }
 
-async function visualizarLixeiraEspecifica(id: string) {
-  const requisicao = `http://localhost:4000/Lixeiras/${id}`;
-
+async function visualizarLixeiraEspecifica(porta: number, id: string) {  
+  const requisicao = `http://localhost:${porta}/Lixeiras/${id}`;
+  console.log(requisicao)
   const request = axios.get(requisicao).then(function (response) {
     console.log(response.data);
-  });
+  });  
   promises.push(request);
   await Promise.all(promises);
 }
@@ -105,7 +115,7 @@ const exibirMenu = () => {
 
       if (estacao === "Todas") {
         visualizarLixeiras(quantidade).then(() => {
-          visualizarLixeira(lixeiras);
+          visualizarLixeira(lixeirasRequisicao);
         });
       } else {
         visualizarLixeirasEstacao(estacao, quantidade).then(() => {
@@ -117,9 +127,11 @@ const exibirMenu = () => {
 
 const visualizarLixeira = (lixeirasResponse: Lixeira[]) => {
   let aux: string[] = [];
+  let porta: number = 4000;
   // console.log(lixeiras);
+  console.log(lixeirasResponse)
   lixeirasResponse.forEach((lixeira: Lixeira) => {
-    aux.push(lixeira.id);
+    aux.push(lixeira.id);    
   });
   inquirer
     .prompt([
@@ -131,12 +143,28 @@ const visualizarLixeira = (lixeirasResponse: Lixeira[]) => {
       },
     ])
     .then((answers: any) => {
-      // console.info("Answers:", answers);
-      visualizarLixeiraEspecifica(answers.id).then(() => {
+      // console.info("Answers:", answers); 
+        lixeirasResponse.forEach((lixeira: Lixeira) => {
+            if(lixeira.id === answers.id){
+              switch(lixeira.estacao){
+                case "A":
+                  porta = 4000;
+                  break;
+                case "B":
+                  porta = 4001;
+                  break;
+                case "C":
+                  porta = 4002;
+                  break;
+              }
+            };
+        })        
+        visualizarLixeiraEspecifica(porta, answers.id).then(() => {
         lixeiras = [];
         exibirMenu();
       });
     });
+    lixeirasRequisicao = [];
 };
 
 exibirMenu();
