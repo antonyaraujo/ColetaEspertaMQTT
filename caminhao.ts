@@ -6,7 +6,7 @@ let lixeiras: Lixeira[] = [];
 
 /** Broker A */
 const opcoesBrokerA = {
-  host: "55e424c995d945808dcb66224696fd04.s1.eu.hivemq.cloud",
+  host: process.env.HOST,
   port: process.env.PORTA,
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,
@@ -25,10 +25,9 @@ clienteA.on("connect", () => {
   });
 });
 
-
 /** Broker B */
 const opcoesBrokerB = {
-  host: "ba0157fae8534f45b495084d8235d6e2.s1.eu.hivemq.cloud",
+  host: process.env.HOSTB,
   port: process.env.PORTA,
   protocol: process.env.PROTOCOLO,
   username: process.env.USUARIO,
